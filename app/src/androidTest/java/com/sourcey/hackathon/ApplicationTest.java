@@ -1,4 +1,4 @@
-package gs.hackathon2016;
+package com.sourcey.hackathon;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

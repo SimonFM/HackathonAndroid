@@ -5,7 +5,7 @@ android {
     buildToolsVersion "24.0.0 rc3"
 
     defaultConfig {
-        applicationId "com.hackerz.hackathon"
+        applicationId "hackerz.hackathonandroid"
         minSdkVersion 21
         targetSdkVersion 23
         versionCode 1

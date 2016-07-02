@@ -1,4 +1,4 @@
-package com.hackerz.hackathon;
+package hackerz.hackathonandroid;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

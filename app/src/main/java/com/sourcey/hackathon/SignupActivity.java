@@ -1,6 +1,7 @@
 package com.sourcey.hackathon;
 
 import android.app.ProgressDialog;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -10,24 +11,46 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.RequestFuture;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
 public class SignupActivity extends AppCompatActivity {
     private static final String TAG = "SignupActivity";
+    private RequestQueue mQueue;
+    RequestQueue queue;
+    String signUpURL = "http://10.0.2.2:4000/user";
+    final CountDownLatch countDownLatch = new CountDownLatch(1);
+    final Object[] responseHolder = new Object[1];
 
-    @Bind(R.id.input_name) EditText _nameText;
-    @Bind(R.id.input_email) EditText _emailText;
-    @Bind(R.id.input_password) EditText _passwordText;
-    @Bind(R.id.btn_signup) Button _signupButton;
-    @Bind(R.id.link_login) TextView _loginLink;
-    
+    @Bind(R.id.input_name)
+    EditText _nameText;
+    @Bind(R.id.input_email)
+    EditText _emailText;
+    @Bind(R.id.input_password)
+    EditText _passwordText;
+    @Bind(R.id.btn_signup)
+    Button _signupButton;
+    @Bind(R.id.link_login)
+    TextView _loginLink;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         ButterKnife.bind(this);
-
+        queue = Volley.newRequestQueue(this);
         _signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,30 +77,60 @@ public class SignupActivity extends AppCompatActivity {
 
         _signupButton.setEnabled(false);
 
-        final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this,
-                R.style.AppTheme_Dark_Dialog);
+        final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this, R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Creating Account...");
         progressDialog.show();
 
-        String name = _nameText.getText().toString();
-        String email = _emailText.getText().toString();
-        String password = _passwordText.getText().toString();
+        final String name = _nameText.getText().toString();
+        final String email = _emailText.getText().toString();
+        final String password = _passwordText.getText().toString();
+
+        final String[] names = name.split(" ");
 
         // TODO: Implement your own signup logic here.
+           new android.os.Handler().postDelayed(
+                    new Runnable() {
+                        public void run() {
+                            JSONObject json = new JSONObject();
+                            try{
+                                json.put("expMonth", "01");
+                                json.put("id" , "1237281732173");
+                                json.put("expYear", "99");
+                                json.put("number", "5555555555554444");
+                                json.put("cvc", "123");
+                                json.put("fname", names[0]);
+                                json.put("lname", names[1]);
+                                json.put("email", email);
+                                json.put("password", password);
+                                json.put("phoneNumber", "+353 86 1234 789");
 
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        // On complete call either onSignupSuccess or onSignupFailed
-                        // depending on success
-                        onSignupSuccess();
-                        // onSignupFailed();
-                        progressDialog.dismiss();
-                    }
-                }, 3000);
+                                RequestFuture<JSONObject> future = RequestFuture.newFuture();
+                                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, signUpURL,  json, future, future);
+                                queue.add(request);
+
+                                try {
+                                    JSONObject response = future.get();
+                                    if(response.get("code").equals("200")){
+                                        onSignupSuccess();
+                                    } else {
+                                        onSignupFailed();
+                                    }
+                                    System.out.println(response);
+                                } catch (InterruptedException e) {
+                                    onSignupFailed();
+                                } catch (ExecutionException e) {
+                                    onSignupFailed();
+                                }
+
+                            } catch (Exception ex) {
+                                onSignupFailed();
+                            }
+                            progressDialog.dismiss();
+                        }
+                    }, 3000);
+
     }
-
 
     public void onSignupSuccess() {
         _signupButton.setEnabled(true);

@@ -1,6 +1,8 @@
 package com.sourcey.hackathon;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
@@ -18,9 +20,10 @@ public class CardViewActivity extends AppCompatActivity {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private static String LOG_TAG = "CardViewActivity";
+    public static final String MyPREFERENCES = "MyPrefs";
 
-    Intent loginIntent;
-    Intent userIntent;
+    Intent loginIntent, userIntent;
+    SharedPreferences sharedpreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +31,12 @@ public class CardViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_card_view);
         loginIntent = new Intent(this, LoginActivity.class);
         userIntent = new Intent(this, ProfileScreenXMLUIDesign.class);
-        startActivity(loginIntent);
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        String user = sharedpreferences.getString("CurrentUser", null);
+        if(user == null){
+            startActivity(loginIntent);
+        }
+
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);

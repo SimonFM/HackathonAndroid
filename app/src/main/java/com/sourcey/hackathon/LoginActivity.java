@@ -1,6 +1,8 @@
 package com.sourcey.hackathon;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,24 +14,44 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.RequestFuture;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
+    private static final String loginURL = "http://10.0.2.2:4000/login";
+    private RequestQueue queue;
+    public static final String MyPREFERENCES = "MyPrefs";
 
     @Bind(R.id.input_email) EditText _emailText;
     @Bind(R.id.input_password) EditText _passwordText;
     @Bind(R.id.btn_login) Button _loginButton;
     @Bind(R.id.link_signup) TextView _signupLink;
+    SharedPreferences sharedpreferences;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-        
+        queue = Volley.newRequestQueue(this);
         _loginButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -47,6 +69,7 @@ public class LoginActivity extends AppCompatActivity {
                 startActivityForResult(intent, REQUEST_SIGNUP);
             }
         });
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
     }
 
     public void login() {
@@ -64,24 +87,43 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
 
-        String email = _emailText.getText().toString();
-        String password = _passwordText.getText().toString();
+        final String email = _emailText.getText().toString();
+        final String password = _passwordText.getText().toString();
 
         // TODO: Implement your own authentication logic here.
 
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
-                        // On complete call either onLoginSuccess or onLoginFailed
-                        onLoginSuccess();
-                        // onLoginFailed();
-                        progressDialog.dismiss();
+                        JSONObject json = new JSONObject();
+                        try{
+                            json.put("email", email);
+                            json.put("password", password);
+
+                            RequestFuture<JSONObject> future = RequestFuture.newFuture();
+                            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, loginURL, json, future, future);
+                            queue.add(request);
+
+                            try {
+                                JSONObject response = future.get();
+                                if (response.get("code").equals("200")) {
+                                    onLoginSuccess(email);
+                                } else {
+                                    onLoginFailed();
+                                }
+                                System.out.println(response);
+                            } catch (Exception e) {
+                                onLoginFailed();
+                            }
+                    } catch(Exception ex) {
+                            onLoginFailed();
                     }
-                }, 3000);
+                    progressDialog.dismiss();
+                }
+    }, 3000);
 
 
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -101,8 +143,12 @@ public class LoginActivity extends AppCompatActivity {
         moveTaskToBack(true);
     }
 
-    public void onLoginSuccess() {
+    public void onLoginSuccess(String user) {
         _loginButton.setEnabled(true);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+
+        editor.putString("CurrentUser", user);
+        editor.commit();
         finish();
     }
 

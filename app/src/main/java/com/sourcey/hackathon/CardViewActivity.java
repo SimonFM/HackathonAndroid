@@ -19,12 +19,16 @@ public class CardViewActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager mLayoutManager;
     private static String LOG_TAG = "CardViewActivity";
 
+    Intent loginIntent;
+    Intent userIntent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card_view);
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
+        loginIntent = new Intent(this, LoginActivity.class);
+        userIntent = new Intent(this, ProfileScreenXMLUIDesign.class);
+        startActivity(loginIntent);
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
@@ -37,11 +41,11 @@ public class CardViewActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        ((MyRecyclerViewAdapter) mAdapter).setOnItemClickListener(new MyRecyclerViewAdapter
-                .MyClickListener() {
+        ((MyRecyclerViewAdapter) mAdapter).setOnItemClickListener(new MyRecyclerViewAdapter.MyClickListener() {
             @Override
             public void onItemClick(int position, View v) {
                 Log.i(LOG_TAG, " Clicked on Item " + position);
+                startActivity(userIntent);
             }
         });
     }

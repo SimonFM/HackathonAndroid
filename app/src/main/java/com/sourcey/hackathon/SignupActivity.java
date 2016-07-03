@@ -14,6 +14,8 @@ import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
@@ -67,7 +69,7 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 
-    public void signup() {
+    public void signup()  {
         Log.d(TAG, "Signup");
 
         if (!validate()) {
@@ -87,44 +89,46 @@ public class SignupActivity extends AppCompatActivity {
         final String password = _passwordText.getText().toString();
 
         final String[] names = name.split(" ");
+        final JSONObject params = new JSONObject();
+        try{
+            params.put("expMonth", "01");
+            params.put("id", "1237281732173");
+            params.put("expYear", "99");
+            params.put("number", "5555555555554444");
+            params.put("cvc", "123");
+            params.put("fname", names[0]);
+            params.put("lname", names[1]);
+            params.put("email", email);
+            params.put("password", password);
+            params.put("phoneNumber", "+353 86 1234 789");
 
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
         // TODO: Implement your own signup logic here.
            new android.os.Handler().postDelayed(
                     new Runnable() {
                         public void run() {
-                            JSONObject json = new JSONObject();
+
                             try{
-                                json.put("expMonth", "01");
-                                json.put("id" , "1237281732173");
-                                json.put("expYear", "99");
-                                json.put("number", "5555555555554444");
-                                json.put("cvc", "123");
-                                json.put("fname", names[0]);
-                                json.put("lname", names[1]);
-                                json.put("email", email);
-                                json.put("password", password);
-                                json.put("phoneNumber", "+353 86 1234 789");
-
-                                RequestFuture<JSONObject> future = RequestFuture.newFuture();
-                                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, signUpURL,  json, future, future);
-                                queue.add(request);
-
-                                try {
-                                    JSONObject response = future.get();
-                                    if(response.get("code").equals("200")){
-                                        onSignupSuccess();
-                                    } else {
-                                        onSignupFailed();
-                                    }
-                                    System.out.println(response);
-                                } catch (InterruptedException e) {
-                                    onSignupFailed();
-                                } catch (ExecutionException e) {
-                                    onSignupFailed();
-                                }
+                                JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST, signUpURL, params,
+                                        new Response.Listener<JSONObject>() {
+                                            @Override
+                                            public void onResponse(JSONObject response) {
+                                                System.out.println(response);
+                                                onSignupSuccess();
+                                            }
+                                        },
+                                        new Response.ErrorListener() {
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+                                                onSignupFailed();
+                                            }
+                                        });
+                                queue.add(jsObjRequest);
 
                             } catch (Exception ex) {
-                                onSignupFailed();
+
                             }
                             progressDialog.dismiss();
                         }

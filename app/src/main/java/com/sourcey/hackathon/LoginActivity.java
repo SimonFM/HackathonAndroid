@@ -145,10 +145,10 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess(String user) {
         _loginButton.setEnabled(true);
-        SharedPreferences.Editor editor = sharedpreferences.edit();
-
-        editor.putString("CurrentUser", user);
-        editor.commit();
+//        SharedPreferences.Editor editor = sharedpreferences.edit();
+//
+//        editor.putString("CurrentUser", user);
+//        editor.commit();
         finish();
     }
 

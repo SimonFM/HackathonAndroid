@@ -12,13 +12,19 @@ import android.view.View;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 
@@ -45,9 +51,9 @@ public class CardViewActivity extends AppCompatActivity {
 
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         String user = sharedpreferences.getString("CurrentUser", null);
-        if(user == null){
+        //if(user == null){
             startActivity(loginIntent);
-        }
+       // }
 
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
@@ -71,28 +77,66 @@ public class CardViewActivity extends AppCompatActivity {
     }
 
     private ArrayList<DataObject> getDataSet() {
-        ArrayList results = new ArrayList<DataObject>();
+        final ArrayList results = new ArrayList<DataObject>();
 
-        JSONObject json = new JSONObject();
-        RequestFuture<JSONObject> future = RequestFuture.newFuture();
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, getUsers, json, future, future);
-        queue.add(request);
+//        JSONObject json = new JSONObject();
+//        RequestFuture<JSONObject> future = RequestFuture.newFuture();
+//        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, getUsers, json, future, future);
+//        queue.add(request);
 
-        try {
-            JSONObject response = future.get();
-            if (response != null && response.get("code").equals("200")) {
-                // add all the users to the DataObjects class
+//        try {
+//            JSONObject response = future.get();
+//            if (response != null && response.get("code").equals("200")) {
+//                // add all the users to the DataObjects class
+//
+//            }
+//            System.out.println(response);
+//        } catch (InterruptedException e) {}
+//          catch (ExecutionException e) {}
+//          catch (Exception ex) {
+//              for (int index = 0; index < 20; index++) {
+//                  DataObject obj = new DataObject("Some Primary Text " + index, "Secondary " + index);
+//                  results.add(index, obj);
+////              }
+        try{
+            // Request a string response
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, getUsers,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            // Result handling
+                            //System.out.println(response.substring(0,100));
+                            try{
+                                JSONArray json = new JSONArray(response);
+                                List<JSONObject> list = new LinkedList<JSONObject>();
+                                for(int i = 0; i < json.length(); i++){
+                                    JSONObject j = new JSONObject(json.get(i).toString());
+                                    DataObject obj = new DataObject(j.get("email").toString(), j.get("phoneNumber").toString());
+                                    results.add(obj);
 
-            }
-            System.out.println(response);
-        } catch (InterruptedException e) {}
-          catch (ExecutionException e) {}
-          catch (Exception ex) {
-              for (int index = 0; index < 20; index++) {
-                  DataObject obj = new DataObject("Some Primary Text " + index, "Secondary " + index);
-                  results.add(index, obj);
-              }
-          }
+                                }
+                                queue.stop();
+                                mAdapter = new MyRecyclerViewAdapter(getDataSet());
+                                mRecyclerView.setAdapter(mAdapter);
+                            } catch(Exception ex) {
+
+                            }
+
+
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    // Error handling
+                    System.out.println("Something went wrong!");
+                    error.printStackTrace();
+
+                }
+            });
+            queue.add(stringRequest);
+        } catch (Exception ex) {
+
+        }
 
         return results;
     }

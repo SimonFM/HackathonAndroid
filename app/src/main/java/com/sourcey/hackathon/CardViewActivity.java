@@ -33,14 +33,15 @@ public class CardViewActivity extends AppCompatActivity {
 
     Intent loginIntent, userIntent;
     SharedPreferences sharedpreferences;
-    String getUsers = "http://10.157.194.119:4000/user";
-
+    //String getUsers = "http://10.157.194.119:4000/user";
+    String getUsers = "http://10.0.2.2:4000/merchant";
+    ArrayList<DataObject> merchants;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card_view);
         loginIntent = new Intent(this, LoginActivity.class);
-        userIntent = new Intent(this, ProfileScreenXMLUIDesign.class);
+
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         String user = sharedpreferences.getString("CurrentUser", null);
         startActivity(loginIntent);
@@ -60,6 +61,9 @@ public class CardViewActivity extends AppCompatActivity {
         ((MyRecyclerViewAdapter) mAdapter).setOnItemClickListener(new MyRecyclerViewAdapter.MyClickListener() {
             @Override
             public void onItemClick(int position, View v) {
+                userIntent = new Intent(getApplicationContext(), ProfileScreenXMLUIDesign.class);
+                DataObject obj = merchants.get(position);
+                userIntent.putExtra("json", obj.getJson().toString());
                 Log.i(LOG_TAG, " Clicked on Item " + position);
                 startActivity(userIntent);
             }
@@ -75,7 +79,6 @@ public class CardViewActivity extends AppCompatActivity {
             public void run() {
                 try {
                     OkHttpClient client = new OkHttpClient();
-
                     Request request = new Request.Builder()
                             .url(getUsers)
                             .get()
@@ -86,17 +89,13 @@ public class CardViewActivity extends AppCompatActivity {
                     Response response = client.newCall(request).execute();
                     if (response.isSuccessful()) {
                         wasSuccess[0] = true;
-
                         JSONArray array = new JSONArray(response.body().string());
 
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject json = array.getJSONObject(i);
-                            DataObject obj = new DataObject(json.get("email").toString(), json.get("_id").toString());
+                            DataObject obj = new DataObject(json.get("email").toString(), json.get("_id").toString(), json);
                             results.add(obj);
                         }
-
-
-
                     } else {
                         wasSuccess[0] = false;
                     }
@@ -105,7 +104,7 @@ public class CardViewActivity extends AppCompatActivity {
                 }
             }
         }).start();
-
+        merchants = results;
         return results;
     }
 }

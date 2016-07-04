@@ -19,6 +19,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.RequestBody;
 
 import org.json.JSONObject;
 
@@ -87,54 +90,42 @@ public class SignupActivity extends AppCompatActivity {
         final String name = _nameText.getText().toString();
         final String email = _emailText.getText().toString();
         final String password = _passwordText.getText().toString();
-
-        final String[] names = name.split(" ");
-        final JSONObject params = new JSONObject();
-        try{
-            params.put("expMonth", "01");
-            params.put("id", "1237281732173");
-            params.put("expYear", "99");
-            params.put("number", "5555555555554444");
-            params.put("cvc", "123");
-            params.put("fname", names[0]);
-            params.put("lname", names[1]);
-            params.put("email", email);
-            params.put("password", password);
-            params.put("phoneNumber", "+353 86 1234 789");
-
-        } catch(Exception ex) {
-            ex.printStackTrace();
-        }
+        final boolean wasSuccess[] = {true};
         // TODO: Implement your own signup logic here.
-           new android.os.Handler().postDelayed(
-                    new Runnable() {
-                        public void run() {
+        new Thread(new Runnable(){
+            @Override
+            public void run() {
+                // Your implementation goes here
+                try{
+                   OkHttpClient client = new OkHttpClient();
 
-                            try{
-//                                JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST, signUpURL, params,
-//                                        new Response.Listener<JSONObject>() {
-//                                            @Override
-//                                            public void onResponse(JSONObject response) {
-//                                                System.out.println(response);
-//                                                onSignupSuccess();
-//                                            }
-//                                        },
-//                                        new Response.ErrorListener() {
-//                                            @Override
-//                                            public void onErrorResponse(VolleyError error) {
-//                                                onSignupFailed();
-//                                            }
-//                                        });
-//                                queue.add(jsObjRequest);
-                                onSignupSuccess();
+                    MediaType mediaType = MediaType.parse("application/json");
+                    RequestBody body = RequestBody.create(mediaType, "{\n    \"id\" : \"1237281732173\",\n    \"name\" : \"" + name +"\",\n    \"password\" : \"" + password + "\",\n    \"email\" : \"" + email + "\",\n    \"phoneNumber\" : \"123456789\",\n    \"creditCardNumber\" : \"5555555555554444\",\n    \"expMonth\" : \"05\",\n    \"expYear\" : \"19\",\n    \"cvc\" : \"123\"\n}");
+                    com.squareup.okhttp.Request request = new com.squareup.okhttp.Request.Builder()
+                            .url(signUpURL)
+                            .post(body)
+                            .addHeader("content-type", "application/json")
+                            .addHeader("cache-control", "no-cache")
+                            .build();
 
-                            } catch (Exception ex) {
-
-                            }
-                            progressDialog.dismiss();
-                        }
-                    }, 3000);
-
+                    com.squareup.okhttp.Response response = client.newCall(request).execute();
+                    if(response.isSuccessful()){
+                        wasSuccess[0] = true;
+                    } else {
+                        wasSuccess[0] = false;
+                    }
+                }
+                catch (Exception ex) {
+                    ex.printStackTrace();
+                    wasSuccess[0] = false;
+                }
+            }
+        }).start();
+        if(wasSuccess[0]){
+            onSignupSuccess();
+        } else {
+            onSignupFailed();
+        }
     }
 
     public void onSignupSuccess() {

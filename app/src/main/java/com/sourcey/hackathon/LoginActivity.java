@@ -39,7 +39,8 @@ import butterknife.Bind;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
-    private static final String loginURL = "http://10.157.194.119:4000/login";
+    //private static final String loginURL = "http://10.157.194.119:4000/login";
+    private static final String loginURL = "http://10.0.2.2:4000/login";
     public static final String MyPREFERENCES = "MyPrefs";
 
     @Bind(R.id.input_email) EditText _emailText;
@@ -96,15 +97,11 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void run() {
                     // Your implementation goes here
-                    JSONObject json = new JSONObject();
-                    try{
-                        json.put("email", email);
-                        json.put("password", password);
-
+                     try{
                         OkHttpClient client = new OkHttpClient();
 
                         MediaType mediaType = MediaType.parse("application/json");
-                        RequestBody body = RequestBody.create(mediaType, "{\n    \"email\" : \"test@test.com\",\n    \"password\" : \"12343556\"\n}");
+                        RequestBody body = RequestBody.create(mediaType, "{\n    \"email\" : \""+email+"\",\n    \"password\" : \""+password+"\"\n}");
                         Request request = new Request.Builder()
                                 .url(loginURL)
                                 .post(body)

@@ -114,7 +114,6 @@ public class LoginActivity extends AppCompatActivity {
 
                         Response response = client.newCall(request).execute();
                         if(response.isSuccessful()){
-                            onLoginSuccess(email);
                             wasSuccess[0] = true;
                         } else {
                             wasSuccess[0] = false;
@@ -128,8 +127,7 @@ public class LoginActivity extends AppCompatActivity {
         }).start();
         if(wasSuccess[0]){
             onLoginSuccess(email);
-        }
-        else{
+        } else{
             onLoginFailed();
         }
         progressDialog.dismiss();

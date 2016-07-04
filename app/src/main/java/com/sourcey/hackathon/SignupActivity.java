@@ -111,21 +111,22 @@ public class SignupActivity extends AppCompatActivity {
                         public void run() {
 
                             try{
-                                JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST, signUpURL, params,
-                                        new Response.Listener<JSONObject>() {
-                                            @Override
-                                            public void onResponse(JSONObject response) {
-                                                System.out.println(response);
-                                                onSignupSuccess();
-                                            }
-                                        },
-                                        new Response.ErrorListener() {
-                                            @Override
-                                            public void onErrorResponse(VolleyError error) {
-                                                onSignupFailed();
-                                            }
-                                        });
-                                queue.add(jsObjRequest);
+//                                JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST, signUpURL, params,
+//                                        new Response.Listener<JSONObject>() {
+//                                            @Override
+//                                            public void onResponse(JSONObject response) {
+//                                                System.out.println(response);
+//                                                onSignupSuccess();
+//                                            }
+//                                        },
+//                                        new Response.ErrorListener() {
+//                                            @Override
+//                                            public void onErrorResponse(VolleyError error) {
+//                                                onSignupFailed();
+//                                            }
+//                                        });
+//                                queue.add(jsObjRequest);
+                                onSignupSuccess();
 
                             } catch (Exception ex) {
 

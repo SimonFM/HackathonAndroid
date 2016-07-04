@@ -94,10 +94,10 @@ public class CardViewActivity extends AppCompatActivity {
 //        } catch (InterruptedException e) {}
 //          catch (ExecutionException e) {}
 //          catch (Exception ex) {
-//              for (int index = 0; index < 20; index++) {
-//                  DataObject obj = new DataObject("Some Primary Text " + index, "Secondary " + index);
-//                  results.add(index, obj);
-////              }
+              for (int index = 0; index < 20; index++) {
+                  DataObject obj = new DataObject("Some Primary Text " + index, "Secondary " + index);
+                  results.add(index, obj);
+              }
         try{
             // Request a string response
             StringRequest stringRequest = new StringRequest(Request.Method.GET, getUsers,
@@ -107,17 +107,21 @@ public class CardViewActivity extends AppCompatActivity {
                             // Result handling
                             //System.out.println(response.substring(0,100));
                             try{
-                                JSONArray json = new JSONArray(response);
-                                List<JSONObject> list = new LinkedList<JSONObject>();
-                                for(int i = 0; i < json.length(); i++){
-                                    JSONObject j = new JSONObject(json.get(i).toString());
-                                    DataObject obj = new DataObject(j.get("email").toString(), j.get("phoneNumber").toString());
-                                    results.add(obj);
-
+//                                JSONArray json = new JSONArray(response);
+//                                List<JSONObject> list = new LinkedList<JSONObject>();
+//                                for(int i = 0; i < json.length(); i++){
+//                                    JSONObject j = new JSONObject(json.get(i).toString());
+//                                    DataObject obj = new DataObject(j.get("email").toString(), j.get("phoneNumber").toString());
+//                                    results.add(obj);
+//
+//                                }
+//                                queue.stop();
+//                                mAdapter = new MyRecyclerViewAdapter(getDataSet());
+//                                mRecyclerView.setAdapter(mAdapter);
+                                for (int index = 0; index < 20; index++) {
+                                    DataObject obj = new DataObject("Some Primary Text " + index, "Secondary " + index);
+                                    results.add(index, obj);
                                 }
-                                queue.stop();
-                                mAdapter = new MyRecyclerViewAdapter(getDataSet());
-                                mRecyclerView.setAdapter(mAdapter);
                             } catch(Exception ex) {
 
                             }

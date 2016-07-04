@@ -15,20 +15,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.ButterKnife;
 import butterknife.Bind;
@@ -36,8 +39,7 @@ import butterknife.Bind;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
-    private static final String loginURL = "http://10.0.2.2:4000/login";
-    private RequestQueue queue;
+    private static final String loginURL = "http://10.157.194.119:4000/login";
     public static final String MyPREFERENCES = "MyPrefs";
 
     @Bind(R.id.input_email) EditText _emailText;
@@ -51,7 +53,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-        queue = Volley.newRequestQueue(this);
         _loginButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -90,38 +91,48 @@ public class LoginActivity extends AppCompatActivity {
         final String email = _emailText.getText().toString();
         final String password = _passwordText.getText().toString();
 
-        // TODO: Implement your own authentication logic here.
+        final boolean[] wasSuccess = {true};
+        new Thread(new Runnable(){
+            @Override
+            public void run() {
+                    // Your implementation goes here
+                    JSONObject json = new JSONObject();
+                    try{
+                        json.put("email", email);
+                        json.put("password", password);
 
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        JSONObject json = new JSONObject();
-                        try{
-                            json.put("email", email);
-                            json.put("password", password);
+                        OkHttpClient client = new OkHttpClient();
 
-                            RequestFuture<JSONObject> future = RequestFuture.newFuture();
-                            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, loginURL, json, future, future);
-                            queue.add(request);
+                        MediaType mediaType = MediaType.parse("application/json");
+                        RequestBody body = RequestBody.create(mediaType, "{\n    \"email\" : \"test@test.com\",\n    \"password\" : \"12343556\"\n}");
+                        Request request = new Request.Builder()
+                                .url(loginURL)
+                                .post(body)
+                                .addHeader("content-type", "application/json")
+                                .addHeader("cache-control", "no-cache")
+                                .build();
 
-                            try {
-                                JSONObject response = future.get();
-                                if (response.get("code").equals("200")) {
-                                    onLoginSuccess(email);
-                                } else {
-                                    onLoginFailed();
-                                }
-                                System.out.println(response);
-                            } catch (Exception e) {
-                                onLoginFailed();
-                            }
-                    } catch(Exception ex) {
-                            onLoginFailed();
-                    }
-                    progressDialog.dismiss();
+                        Response response = client.newCall(request).execute();
+                        if(response.isSuccessful()){
+                            onLoginSuccess(email);
+                            wasSuccess[0] = true;
+                        } else {
+                            wasSuccess[0] = false;
+                        }
                 }
-    }, 3000);
-
+                catch (Exception ex) {
+                    ex.printStackTrace();
+                    wasSuccess[0] = false;
+                }
+            }
+        }).start();
+        if(wasSuccess[0]){
+            onLoginSuccess(email);
+        }
+        else{
+            onLoginFailed();
+        }
+        progressDialog.dismiss();
 
     }
 

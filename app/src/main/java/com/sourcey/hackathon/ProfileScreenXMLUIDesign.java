@@ -1,8 +1,11 @@
 package com.sourcey.hackathon;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import org.json.JSONObject;
@@ -10,6 +13,7 @@ import org.json.JSONObject;
 
 public class ProfileScreenXMLUIDesign extends AppCompatActivity {
 
+    private Button scheduleButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,5 +30,20 @@ public class ProfileScreenXMLUIDesign extends AppCompatActivity {
             }
 
         }
+
+        scheduleButton = (Button) findViewById(R.id.schedule_button);
+
+        scheduleButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+
+                Intent intentToBook = new Intent(getApplicationContext(), BookingsActivity.class);
+                TextView mTextView = (TextView) findViewById(R.id.user_profile_name);
+                intentToBook.putExtra("name", mTextView.getText());
+                startActivity(intentToBook);
+            }
+
+        });
     }
 }

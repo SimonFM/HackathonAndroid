@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.sourcey.hackathon" >
+    package="com.sourcey.hackathon">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -9,11 +9,10 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
-
+        android:theme="@style/AppTheme">
         <activity
             android:name=".CardViewActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -32,12 +31,14 @@
         <!-- </activity> -->
         <activity
             android:name=".UserProfileActivity"
-            android:label="@string/title_activity_user_profile" >
-        </activity>
+            android:label="@string/title_activity_user_profile"></activity>
         <activity
             android:name=".ProfileScreenXMLUIDesign"
-            android:theme="@style/AppTheme.Dark" >
-        </activity>
+            android:theme="@style/AppTheme.Dark"></activity>
+        <activity
+            android:name=".BookingsActivity"
+            android:label="@string/title_activity_bookings"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

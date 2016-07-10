@@ -72,6 +72,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+
     }
 
     public void login() {
@@ -150,11 +151,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onLoginSuccess(String user) {
+        if(user.isEmpty()){
+            user = "NiallTest@gmail.com";
+        }
         _loginButton.setEnabled(true);
-//        SharedPreferences.Editor editor = sharedpreferences.edit();
-//
-//        editor.putString("CurrentUser", user);
-//        editor.commit();
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+
+        editor.putString("CurrentUser", user);
+        editor.commit();
         finish();
     }
 

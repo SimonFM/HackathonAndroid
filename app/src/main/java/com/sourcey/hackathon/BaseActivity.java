@@ -1,19 +1,39 @@
 package com.sourcey.hackathon;
+import android.app.Dialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.RectF;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alamkanak.weekview.DateTimeInterpreter;
 import com.alamkanak.weekview.MonthLoader;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
+import com.alamkanak.weekview.WeekViewLoader;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -23,94 +43,40 @@ import java.util.Locale;
  * Website: http://alamkanak.github.io
  */
 public abstract class BaseActivity extends AppCompatActivity implements WeekView.EventClickListener, MonthLoader.MonthChangeListener, WeekView.EventLongPressListener, WeekView.EmptyViewLongPressListener {
-    private static final int TYPE_DAY_VIEW = 1;
-    private static final int TYPE_THREE_DAY_VIEW = 2;
-    private static final int TYPE_WEEK_VIEW = 3;
-    private int mWeekViewType = TYPE_THREE_DAY_VIEW;
+    private static final int TYPE_WEEK_VIEW = 7;
     private WeekView mWeekView;
-
+    private String getBookingsURL =  "http://10.0.2.2:4000/merchantBooking";
+    private String bookingURL = "http://10.0.2.2:4000/booking";
+    private String singleUserURL = "http://10.0.2.2:4000/singleUser";
+    ArrayList<JSONArray> array = new ArrayList<>();
+    public static final String MyPREFERENCES = "MyPrefs";
+    Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
-
-        // Get a reference for the week view in the layout.
         mWeekView = (WeekView) findViewById(R.id.weekView);
-
-        // Show a toast message about the touched event.
         mWeekView.setOnEventClickListener(this);
-
-        // The week view has infinite scrolling horizontally. We have to provide the events of a
-        // month every time the month changes on the week view.
         mWeekView.setMonthChangeListener(this);
-
-        // Set long press listener for events.
         mWeekView.setEventLongPressListener(this);
-
-        // Set long press listener for empty view
         mWeekView.setEmptyViewLongPressListener(this);
-
-        // Set up a date time interpreter to interpret how the date and time will be formatted in
-        // the week view. This is optional.
+        mWeekView.setNumberOfVisibleDays(TYPE_WEEK_VIEW);
+        mWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics()));
+        mWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
+        mWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
         setupDateTimeInterpreter(false);
+        getEmptyBookings();
+        dialog = new Dialog(this);
+
+        dialog.setContentView(R.layout.activity_booking_dialog);
+        dialog.setTitle("Booking Confirmation");
+
+        //adding text dynamically
+        TextView txt = (TextView) dialog.findViewById(R.id.textView);
+        txt.setText("Are you sure you want this time?");
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        setupDateTimeInterpreter(id == R.id.action_week_view);
-        switch (id){
-            case R.id.action_today:
-                mWeekView.goToToday();
-                return true;
-            case R.id.action_day_view:
-                if (mWeekViewType != TYPE_DAY_VIEW) {
-                    item.setChecked(!item.isChecked());
-                    mWeekViewType = TYPE_DAY_VIEW;
-                    mWeekView.setNumberOfVisibleDays(1);
-
-                    // Lets change some dimensions to best fit the view.
-                    mWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics()));
-                    mWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
-                    mWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
-                }
-                return true;
-            case R.id.action_three_day_view:
-                if (mWeekViewType != TYPE_THREE_DAY_VIEW) {
-                    item.setChecked(!item.isChecked());
-                    mWeekViewType = TYPE_THREE_DAY_VIEW;
-                    mWeekView.setNumberOfVisibleDays(3);
-
-                    // Lets change some dimensions to best fit the view.
-                    mWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics()));
-                    mWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
-                    mWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
-                }
-                return true;
-            case R.id.action_week_view:
-                if (mWeekViewType != TYPE_WEEK_VIEW) {
-                    item.setChecked(!item.isChecked());
-                    mWeekViewType = TYPE_WEEK_VIEW;
-                    mWeekView.setNumberOfVisibleDays(7);
-
-                    // Lets change some dimensions to best fit the view.
-                    mWeekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics()));
-                    mWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
-                    mWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
-                }
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     /**
      * Set up a date time interpreter which will show short date values when in week view and long
@@ -125,11 +91,9 @@ public abstract class BaseActivity extends AppCompatActivity implements WeekView
                 String weekday = weekdayNameFormat.format(date.getTime());
                 SimpleDateFormat format = new SimpleDateFormat(" M/d", Locale.getDefault());
 
-                // All android api level do not have a standard way of getting the first letter of
-                // the week day name. Hence we get the first char programmatically.
-                // Details: http://stackoverflow.com/questions/16959502/get-one-letter-abbreviation-of-week-day-of-a-date-in-java#answer-16959657
-                if (shortDate)
+                if (shortDate) {
                     weekday = String.valueOf(weekday.charAt(0));
+                }
                 return weekday.toUpperCase() + format.format(date.getTime());
             }
 
@@ -146,20 +110,154 @@ public abstract class BaseActivity extends AppCompatActivity implements WeekView
 
     @Override
     public void onEventClick(WeekViewEvent event, RectF eventRect) {
-        Toast.makeText(this, "Clicked " + event.getName(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Clicked " + event.getName() + event.getStartTime().getTime().getHours() + " : " + event.getStartTime().getTime().getMinutes(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onEventLongPress(WeekViewEvent event, RectF eventRect) {
-        Toast.makeText(this, "Long pressed event: " + event.getName(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Long pressed event: " + event.getName() + event.getStartTime().getTime().getHours() + " : " + event.getStartTime().getTime().getMinutes(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onEmptyViewLongPress(Calendar time) {
+    public void onEmptyViewLongPress(final Calendar time) {
         Toast.makeText(this, "Empty view long pressed: " + getEventTitle(time), Toast.LENGTH_SHORT).show();
+
+
+        Bundle extras = getIntent().getExtras();
+        final String merchant = extras.getString("name");
+        final String currentUserEmail = getUserEmail();
+        final JSONObject jsonObject = new JSONObject();
+        try{
+            jsonObject.put("email", currentUserEmail);
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
+        final List<String> responseList = new ArrayList<>();
+
+        //setting custom layout to dialog
+
+        //adding button click event
+        Button dismissButton = (Button) dialog.findViewById(R.id.button);
+        dismissButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+        Button confirmButton = (Button) dialog.findViewById(R.id.button2);
+        confirmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+
+                            OkHttpClient client = new OkHttpClient();
+                            MediaType mediaType = MediaType.parse("application/json");
+                            RequestBody body = RequestBody.create(mediaType, jsonObject.toString());
+                            Request request = new Request.Builder()
+                                    .url(singleUserURL)
+                                    .post(body)
+                                    .addHeader("content-type", "application/json")
+                                    .addHeader("cache-control", "no-cache")
+                                    .build();
+
+                            Response response = client.newCall(request).execute();
+                            if (response.isSuccessful()) {
+                                JSONArray req = new JSONArray(response.body().string());
+                                JSONObject reqBody = req.getJSONObject(0);
+
+                                int year = time.get(Calendar.YEAR);
+                                int month = time.get(Calendar.MONTH);
+                                int day = time.get(Calendar.DAY_OF_MONTH);
+                                int hour = time.get(Calendar.HOUR_OF_DAY);
+                                reqBody.put("merchant", merchant);
+                                reqBody.put("startHour", hour);
+                                reqBody.put("endHour", hour + 1);
+                                reqBody.put("startDate", day + "/" + month + "/" + year);
+                                reqBody.put("endDate", day + "/" + month + "/" + year);
+                                reqBody.put("lessonCount", 1);
+
+                                body = RequestBody.create(mediaType, reqBody.toString());
+                                request = new Request.Builder()
+                                        .url(bookingURL)
+                                        .post(body)
+                                        .addHeader("content-type", "application/json")
+                                        .addHeader("cache-control", "no-cache")
+                                        .build();
+                                response = client.newCall(request).execute();
+                                if (response.isSuccessful()) {
+                                    Message msg = handler.obtainMessage();
+                                    msg.arg1 = 1;
+                                    handler.sendMessage(msg);
+
+                                } else {
+                                    Message msg = handler.obtainMessage();
+                                    msg.arg1 = 2;
+                                    handler.sendMessage(msg);                                }
+                            } else {
+                                Message msg = handler.obtainMessage();
+                                msg.arg1 = 2;
+                                handler.sendMessage(msg);                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }).start();
+
+
+            }
+        });
+
     }
 
-    public WeekView getWeekView() {
-        return mWeekView;
+    private final Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+            switch(msg.arg1){
+                case 1:
+                    Toast.makeText(getApplicationContext(), "Booking successful", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                    break;
+                case 2:
+                    Toast.makeText(getApplicationContext(), "Unable to book this slot, please try again", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
+
+    private String getUserEmail(){
+        SharedPreferences prefs = getSharedPreferences(MyPREFERENCES, MODE_PRIVATE);
+        return  prefs.getString("CurrentUser", null);
     }
+
+    private void getEmptyBookings(){
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    OkHttpClient client = new OkHttpClient();
+
+                    MediaType mediaType = MediaType.parse("application/json");
+                    RequestBody body = RequestBody.create(mediaType, "{\n    \"merchant\" : \"AirportDriver\"\n}");
+                    Request request = new Request.Builder()
+                            .url(getBookingsURL)
+                            .post(body)
+                            .addHeader("content-type", "application/json")
+                            .addHeader("cache-control", "no-cache")
+                            .build();
+
+                    Response response = client.newCall(request).execute();
+                    if(response.isSuccessful()){
+                        array.add(new JSONArray(response.body().string()));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
 }

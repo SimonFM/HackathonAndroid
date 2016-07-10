@@ -5,8 +5,8 @@ android {
     buildToolsVersion '22.0.1'
 
     repositories{
-        maven{
-            url 'https://raw.github.com/zeeshanejaz/unirest-android/mvn-repo'
+        repositories {
+            maven { url "https://jitpack.io" }
         }
     }
 
@@ -35,4 +35,5 @@ dependencies {
     compile 'com.he5ed.lib:volley:android-cts-5.1_r4'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.github.alamkanak:android-week-view:1.2.6'
+    compile 'com.github.vlonjatg:progress-activity:v1.0.3'
 }

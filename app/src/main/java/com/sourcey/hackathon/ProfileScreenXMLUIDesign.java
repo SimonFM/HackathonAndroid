@@ -8,12 +8,24 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.android.volley.RequestQueue;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ProfileScreenXMLUIDesign extends AppCompatActivity {
 
     private Button scheduleButton;
+    private JSONObject json;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,27 +33,30 @@ public class ProfileScreenXMLUIDesign extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             try{
-                JSONObject json = new JSONObject(extras.getString("json"));
-                String email = json.getString("email");
+                json = new JSONObject(extras.getString("json"));
+                String email = json.getString("name");
                 TextView mTextView = (TextView) findViewById(R.id.user_profile_name);
                 mTextView.setText(email);
             } catch(Exception ex) {
-
+                ex.printStackTrace();
             }
 
         }
-
         scheduleButton = (Button) findViewById(R.id.schedule_button);
 
         scheduleButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
-
-                Intent intentToBook = new Intent(getApplicationContext(), BookingsActivity.class);
-                TextView mTextView = (TextView) findViewById(R.id.user_profile_name);
-                intentToBook.putExtra("name", mTextView.getText());
-                startActivity(intentToBook);
+                try{
+                    Intent intentToBook = new Intent(getApplicationContext(), BookingsActivity.class);
+                    TextView mTextView = (TextView) findViewById(R.id.user_profile_name);
+                    intentToBook.putExtra("name", mTextView.getText());
+                    intentToBook.putExtra("email", json.getString("email"));
+                    startActivity(intentToBook);
+                } catch (Exception ex){
+                    ex.printStackTrace();
+                }
             }
 
         });

@@ -34,9 +34,9 @@ public class ProfileScreenXMLUIDesign extends AppCompatActivity {
         if (extras != null) {
             try{
                 json = new JSONObject(extras.getString("json"));
-                String email = json.getString("name");
+                String name = json.getString("name");
                 TextView mTextView = (TextView) findViewById(R.id.user_profile_name);
-                mTextView.setText(email);
+                mTextView.setText(name);
             } catch(Exception ex) {
                 ex.printStackTrace();
             }

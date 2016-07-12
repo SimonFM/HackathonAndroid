@@ -98,29 +98,29 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void run() {
                     // Your implementation goes here
-//                     try{
-//                        OkHttpClient client = new OkHttpClient();
-//
-//                        MediaType mediaType = MediaType.parse("application/json");
-//                        RequestBody body = RequestBody.create(mediaType, "{\n    \"email\" : \""+email+"\",\n    \"password\" : \""+password+"\"\n}");
-//                        Request request = new Request.Builder()
-//                                .url(loginURL)
-//                                .post(body)
-//                                .addHeader("content-type", "application/json")
-//                                .addHeader("cache-control", "no-cache")
-//                                .build();
-//
-//                        Response response = client.newCall(request).execute();
-//                        if(response.isSuccessful()){
-//                            wasSuccess[0] = true;
-//                        } else {
-//                            wasSuccess[0] = false;
-//                        }
-//                }
-//                catch (Exception ex) {
-//                    ex.printStackTrace();
-//                    wasSuccess[0] = false;
-//                }
+                     try{
+                        OkHttpClient client = new OkHttpClient();
+
+                        MediaType mediaType = MediaType.parse("application/json");
+                        RequestBody body = RequestBody.create(mediaType, "{\n    \"email\" : \""+email+"\",\n    \"password\" : \""+password+"\"\n}");
+                        Request request = new Request.Builder()
+                                .url(loginURL)
+                                .post(body)
+                                .addHeader("content-type", "application/json")
+                                .addHeader("cache-control", "no-cache")
+                                .build();
+
+                        Response response = client.newCall(request).execute();
+                        if(response.isSuccessful()){
+                            wasSuccess[0] = true;
+                        } else {
+                            wasSuccess[0] = false;
+                        }
+                }
+                catch (Exception ex) {
+                    ex.printStackTrace();
+                    wasSuccess[0] = false;
+                }
             }
         }).start();
         if(wasSuccess[0]){

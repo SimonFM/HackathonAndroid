@@ -36,13 +36,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * This is a base activity which contains week view and all the codes necessary to initialize the
- * week view.
- * Created by Raquib-ul-Alam Kanak on 1/3/2014.
- * Website: http://alamkanak.github.io
- */
-public abstract class BaseActivity extends AppCompatActivity implements WeekView.EventClickListener, MonthLoader.MonthChangeListener, WeekView.EventLongPressListener, WeekView.EmptyViewLongPressListener {
+public abstract class BaseActivity extends AppCompatActivity implements WeekView.EventClickListener,
+        MonthLoader.MonthChangeListener, WeekView.EventLongPressListener, WeekView.EmptyViewLongPressListener {
     private static final int TYPE_WEEK_VIEW = 7;
     private WeekView mWeekView;
     private String getBookingsURL =  "http://10.0.2.2:4000/merchantBooking";
@@ -51,6 +46,7 @@ public abstract class BaseActivity extends AppCompatActivity implements WeekView
     ArrayList<JSONArray> array = new ArrayList<>();
     public static final String MyPREFERENCES = "MyPrefs";
     Dialog dialog;
+    String email = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +62,8 @@ public abstract class BaseActivity extends AppCompatActivity implements WeekView
         mWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
         mWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
         setupDateTimeInterpreter(false);
-        getEmptyBookings();
+        String merchantName = "";
+        getEmptyBookings(merchantName);
         dialog = new Dialog(this);
 
         dialog.setContentView(R.layout.activity_booking_dialog);
@@ -132,11 +129,6 @@ public abstract class BaseActivity extends AppCompatActivity implements WeekView
         } catch (Exception ex){
             ex.printStackTrace();
         }
-        final List<String> responseList = new ArrayList<>();
-
-        //setting custom layout to dialog
-
-        //adding button click event
         Button dismissButton = (Button) dialog.findViewById(R.id.button);
         dismissButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -232,7 +224,7 @@ public abstract class BaseActivity extends AppCompatActivity implements WeekView
         return  prefs.getString("CurrentUser", null);
     }
 
-    private void getEmptyBookings(){
+    private void getEmptyBookings(final String merchant){
 
         new Thread(new Runnable() {
             @Override
@@ -241,7 +233,7 @@ public abstract class BaseActivity extends AppCompatActivity implements WeekView
                     OkHttpClient client = new OkHttpClient();
 
                     MediaType mediaType = MediaType.parse("application/json");
-                    RequestBody body = RequestBody.create(mediaType, "{\n    \"merchant\" : \"AirportDriver\"\n}");
+                    RequestBody body = RequestBody.create(mediaType, "{\n    \"merchant\" : \"" + merchant + "\"\n}");
                     Request request = new Request.Builder()
                             .url(getBookingsURL)
                             .post(body)

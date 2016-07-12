@@ -1,5 +1,7 @@
 package com.sourcey.hackathon;
 
+import android.os.Bundle;
+
 import com.alamkanak.weekview.WeekViewEvent;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -13,6 +15,7 @@ public class BookingsActivity extends BaseActivity {
 
     @Override
     public void onStart(){
+        email = getIntent().getExtras().getString("email");
         super.onStart();
         if(array.size() > 0){
             mEvents = makeList(array.get(0));

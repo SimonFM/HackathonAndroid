@@ -23,6 +23,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import butterknife.ButterKnife;
+
 public class UserCardViewActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -33,10 +35,9 @@ public class UserCardViewActivity extends AppCompatActivity {
 
     Intent loginIntent, paymentIntent;
     SharedPreferences sharedpreferences;
-    String getMerchants = "http://10.0.2.2:4000/merchant";
-    String userBookingsURL = "http://10.0.2.2:4000/userBookings";
+    String userBookingsURL = "http://10.0.2.2:4000/userBooking";
     ArrayList<DataObject> merchants;
-    private String user;
+    private String user = null;
 
 
     @Override
@@ -44,11 +45,10 @@ public class UserCardViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_card_view);
 
+
         loginIntent = new Intent(this, LoginActivity.class);
 
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-        user = sharedpreferences.getString("CurrentUser", null);
-        startActivity(loginIntent);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
@@ -66,6 +66,7 @@ public class UserCardViewActivity extends AppCompatActivity {
                 startActivity(startMerchantIntent);
             }
         });
+
     }
 
     @Override
@@ -86,6 +87,7 @@ public class UserCardViewActivity extends AppCompatActivity {
     private ArrayList<DataObject> getListOfUserBookings() {
         final ArrayList results = new ArrayList<>();
         final boolean[] wasSuccess = {true};
+        user = sharedpreferences.getString("CurrentUser", "");
 
         if(user.isEmpty()){
 
@@ -102,7 +104,6 @@ public class UserCardViewActivity extends AppCompatActivity {
                                 .post(body)
                                 .addHeader("content-type", "application/json")
                                 .addHeader("cache-control", "no-cache")
-
                                 .build();
 
                         Response response = client.newCall(request).execute();
@@ -119,7 +120,7 @@ public class UserCardViewActivity extends AppCompatActivity {
                             wasSuccess[0] = false;
                         }
                     } catch (Exception ex) {
-
+                        wasSuccess[0] = false;
                     }
 
                 }

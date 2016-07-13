@@ -102,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
                         OkHttpClient client = new OkHttpClient();
 
                         MediaType mediaType = MediaType.parse("application/json");
-                        RequestBody body = RequestBody.create(mediaType, "{\n    \"email\" : \""+email+"\",\n    \"password\" : \""+password+"\"\n}");
+                        RequestBody body = RequestBody.create(mediaType, "{\n    \"email\" : \"" + email + "\",\n    \"password\" : \"" + password + "\"\n}");
                         Request request = new Request.Builder()
                                 .url(loginURL)
                                 .post(body)
@@ -160,6 +160,8 @@ public class LoginActivity extends AppCompatActivity {
         editor.putString("CurrentUser", user);
         editor.commit();
         finish();
+        Intent userHomePage = new Intent(getApplicationContext(), UserCardViewActivity.class);
+        startActivity(userHomePage);
     }
 
     public void onLoginFailed() {

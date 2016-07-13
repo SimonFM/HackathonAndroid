@@ -188,7 +188,8 @@ public abstract class BaseActivity extends AppCompatActivity implements WeekView
                                 } else {
                                     Message msg = handler.obtainMessage();
                                     msg.arg1 = 2;
-                                    handler.sendMessage(msg);                                }
+                                    handler.sendMessage(msg);
+                                }
                             } else {
                                 Message msg = handler.obtainMessage();
                                 msg.arg1 = 2;

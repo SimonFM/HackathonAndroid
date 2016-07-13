@@ -62,6 +62,13 @@ public class CardViewActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+        mRecyclerView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mAdapter = new MyRecyclerViewAdapter(getListOfMerchants());
+        mRecyclerView.setAdapter(mAdapter);
+
         ((MyRecyclerViewAdapter) mAdapter).setOnItemClickListener(new MyRecyclerViewAdapter.MyClickListener() {
             @Override
             public void onItemClick(int position, View v) {

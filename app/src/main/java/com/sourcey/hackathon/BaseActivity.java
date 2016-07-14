@@ -1,6 +1,5 @@
 package com.sourcey.hackathon;
 import android.app.Dialog;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.RectF;
 import android.os.Bundle;
@@ -8,11 +7,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,7 +16,6 @@ import com.alamkanak.weekview.DateTimeInterpreter;
 import com.alamkanak.weekview.MonthLoader;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
-import com.alamkanak.weekview.WeekViewLoader;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -33,16 +28,16 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Locale;
 
 public abstract class BaseActivity extends AppCompatActivity implements WeekView.EventClickListener,
         MonthLoader.MonthChangeListener, WeekView.EventLongPressListener, WeekView.EmptyViewLongPressListener {
     private static final int TYPE_WEEK_VIEW = 7;
     private WeekView mWeekView;
-    private String getBookingsURL =  "http://10.0.2.2:4000/merchantBooking";
-    private String bookingURL = "http://10.0.2.2:4000/booking";
-    private String singleUserURL = "http://10.0.2.2:4000/singleUser";
+    private String host = "http://10.0.2.2:4000";
+    private String getBookingsURL =  host + "/merchantBooking";
+    private String bookingURL = host + "/booking";
+    private String singleUserURL = host + "/singleUser";
     ArrayList<JSONArray> array = new ArrayList<>();
     public static final String MyPREFERENCES = "MyPrefs";
     Dialog dialog;
@@ -51,6 +46,7 @@ public abstract class BaseActivity extends AppCompatActivity implements WeekView
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getBookings(getIntent().getExtras().getString("name"));
         setContentView(R.layout.activity_base);
         mWeekView = (WeekView) findViewById(R.id.weekView);
         mWeekView.setOnEventClickListener(this);
@@ -62,8 +58,6 @@ public abstract class BaseActivity extends AppCompatActivity implements WeekView
         mWeekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
         mWeekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
         setupDateTimeInterpreter(false);
-        String merchantName = "";
-        getEmptyBookings(merchantName);
         dialog = new Dialog(this);
 
         dialog.setContentView(R.layout.activity_booking_dialog);
@@ -71,7 +65,7 @@ public abstract class BaseActivity extends AppCompatActivity implements WeekView
 
         //adding text dynamically
         TextView txt = (TextView) dialog.findViewById(R.id.textView);
-        txt.setText("Are you sure you want this time?");
+        txt.setText("Are you sure you to pay?");
     }
 
 
@@ -145,7 +139,6 @@ public abstract class BaseActivity extends AppCompatActivity implements WeekView
                     @Override
                     public void run() {
                         try {
-
                             OkHttpClient client = new OkHttpClient();
                             MediaType mediaType = MediaType.parse("application/json");
                             RequestBody body = RequestBody.create(mediaType, jsonObject.toString());
@@ -225,7 +218,7 @@ public abstract class BaseActivity extends AppCompatActivity implements WeekView
         return  prefs.getString("CurrentUser", null);
     }
 
-    private void getEmptyBookings(final String merchant){
+    private void getBookings(final String merchant){
 
         new Thread(new Runnable() {
             @Override

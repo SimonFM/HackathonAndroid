@@ -35,20 +35,16 @@ public class SignupActivity extends AppCompatActivity {
     private static final String TAG = "SignupActivity";
     private RequestQueue mQueue;
     RequestQueue queue;
-    String signUpURL = "http://10.0.2.2:4000/user";
+    private String host = "http://10.0.2.2:4000";
+    String signUpURL = host + "/user";
     final CountDownLatch countDownLatch = new CountDownLatch(1);
     final Object[] responseHolder = new Object[1];
 
-    @Bind(R.id.input_name)
-    EditText _nameText;
-    @Bind(R.id.input_email)
-    EditText _emailText;
-    @Bind(R.id.input_password)
-    EditText _passwordText;
-    @Bind(R.id.btn_signup)
-    Button _signupButton;
-    @Bind(R.id.link_login)
-    TextView _loginLink;
+    @Bind(R.id.input_name) EditText _nameText;
+    @Bind(R.id.input_email) EditText _emailText;
+    @Bind(R.id.input_password) EditText _passwordText;
+    @Bind(R.id.btn_signup) Button _signupButton;
+    @Bind(R.id.link_login) TextView _loginLink;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

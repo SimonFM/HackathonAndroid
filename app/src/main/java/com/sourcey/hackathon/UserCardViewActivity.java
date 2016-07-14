@@ -31,13 +31,13 @@ public class UserCardViewActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager mLayoutManager;
     private static String LOG_TAG = "CardViewActivity";
     public static final String MyPREFERENCES = "MyPrefs";
-    private boolean selection = false;
 
     Intent loginIntent, paymentIntent;
     SharedPreferences sharedpreferences;
     String userBookingsURL = "http://10.0.2.2:4000/userBooking";
     ArrayList<DataObject> merchants;
     private String user = null;
+    boolean drawn = false;
 
 
     @Override
@@ -58,6 +58,7 @@ public class UserCardViewActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mAdapter);
 
         FloatingActionButton FAB = (FloatingActionButton) findViewById(R.id.fab);
+        //FAB.setBackgroundTintList(getResources().getColorStateList(R.color.accent));
         FAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,7 +114,8 @@ public class UserCardViewActivity extends AppCompatActivity {
 
                             for (int i = 0; i < array.length(); i++) {
                                 JSONObject json = array.getJSONObject(i);
-                                DataObject obj = new DataObject(json.get("name").toString(), json.get("email").toString(), json);
+                                DataObject obj = new DataObject(json.get("name").toString(), "Start: " + json.get("startHour").toString() + ":00"
+                                                                + " to " + json.get("endHour").toString() + ":00 " + " on " + json.get("startDate").toString() , json);
                                 results.add(obj);
                             }
                         } else {
@@ -127,6 +129,11 @@ public class UserCardViewActivity extends AppCompatActivity {
             }).start();
             merchants = results;
         }
-        return results;
+        if(!drawn) {
+            drawn = true;
+            return merchants;
+        } else {
+            return new ArrayList<>();
+        }
     }
 }

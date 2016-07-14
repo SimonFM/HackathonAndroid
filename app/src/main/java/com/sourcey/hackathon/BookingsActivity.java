@@ -12,6 +12,8 @@ import java.util.List;
 public class BookingsActivity extends BaseActivity {
 
     ArrayList<WeekViewEvent> mEvents = new ArrayList<>();
+    int previousYear = 0, previousMonth = 0;
+    int callCount = 0;
 
     @Override
     public void onStart(){
@@ -25,15 +27,23 @@ public class BookingsActivity extends BaseActivity {
     @Override
     public List<? extends WeekViewEvent> onMonthChange(int newYear, int newMonth) {
         ArrayList<WeekViewEvent> bookedEvents;
+        previousYear = newYear;
+        previousMonth = newMonth;
 
         if (mEvents.size() > 0) {
             bookedEvents = mEvents;
         } else {
-            while(array.size() < 0);
             bookedEvents = makeList(array.get(0));
             mEvents = bookedEvents;
         }
-        return bookedEvents;
+
+        if(previousMonth == newMonth){
+            if(callCount == 0){
+                callCount++;
+                return mEvents;
+            }
+        }
+        return new ArrayList<>();
     }
 
     private ArrayList<WeekViewEvent> makeList(JSONArray jsonArray){

@@ -12,7 +12,7 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/logo" />
+            android:src="@drawable/background" />
 
         <ImageButton
             android:id="@+id/user_profile_photo"
@@ -32,7 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/header_cover_image"
-            android:background="#ebca0707"
+            android:background="#eb058733"
             android:elevation="4dp"
             android:paddingBottom="24dp">
 
@@ -89,8 +89,15 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="View Schedule"
+                android:text="Place a Booking"
                 android:id="@+id/schedule_button" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageView"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/logo"/>
 
 
         </LinearLayout>

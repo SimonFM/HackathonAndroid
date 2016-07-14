@@ -6,8 +6,6 @@ public class DataObject {
     private String mText1;
     private String mText2;
     private JSONObject jsonObject;
-    private String ImageURL;
-
     DataObject (String text1, String text2, JSONObject json){
         mText1 = text1;
         mText2 = text2;

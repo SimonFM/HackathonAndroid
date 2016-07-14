@@ -38,7 +38,8 @@ public class PaymentActivity extends AppCompatActivity {
 
     Dialog dialog;
 
-    private final String paymentURL = "http://10.0.2.2:4000/payment";
+    private String host = "http://10.0.2.2:4000";
+    private final String paymentURL = host + "/payment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,7 +110,7 @@ public class PaymentActivity extends AppCompatActivity {
                     OkHttpClient client = new OkHttpClient();
 
                     MediaType mediaType = MediaType.parse("application/json");
-                    RequestBody body = RequestBody.create(mediaType, "{\r\n  \"amount\": \"400\", \r\n  \"description\": \"Test Payment\", \r\n  \"currency\": \"USD\"\r\n}");
+                    RequestBody body = RequestBody.create(mediaType, "{\r\n  \"amount\": \"" + amounToPay + "\", \r\n  \"description\": \"Test Payment\", \r\n  \"currency\": \"USD\"\r\n}");
                     Request request = new Request.Builder()
                             .url(paymentURL)
                             .post(body)

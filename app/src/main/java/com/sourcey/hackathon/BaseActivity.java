@@ -215,7 +215,7 @@ public abstract class BaseActivity extends AppCompatActivity implements WeekView
 
     private String getUserEmail(){
         SharedPreferences prefs = getSharedPreferences(MyPREFERENCES, MODE_PRIVATE);
-        return  prefs.getString("CurrentUser", null);
+        return  prefs.getString("CurrentUser", "NiallTest@gmail.com");
     }
 
     private void getBookings(final String merchant){

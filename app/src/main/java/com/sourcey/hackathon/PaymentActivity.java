@@ -48,7 +48,7 @@ public class PaymentActivity extends AppCompatActivity {
         dialog = new Dialog(this);
         ButterKnife.bind(this);
 
-        dialog.setContentView(R.layout.activity_booking_dialog);
+        dialog.setContentView(R.layout.activity_payment_dialog);
         dialog.setTitle("Are you sure?");
 
 

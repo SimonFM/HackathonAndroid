@@ -62,7 +62,6 @@ public class UserCardViewActivity extends AppCompatActivity {
         FAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(UserCardViewActivity.this, "Would you like a coffee?", Toast.LENGTH_SHORT).show();
                 Intent startMerchantIntent = new Intent(getApplicationContext(), CardViewActivity.class);
                 startActivity(startMerchantIntent);
             }

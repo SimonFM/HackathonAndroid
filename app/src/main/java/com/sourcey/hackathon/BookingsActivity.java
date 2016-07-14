@@ -82,7 +82,7 @@ public class BookingsActivity extends BaseActivity {
                 event = new WeekViewEvent(1, getEventTitle(startTime), startTime, endTime);
                 event.setColor(getResources().getColor(R.color.event_color_02));
                 if(object.get("ref") != null){
-                    event.setName("BOOKED");
+                    event.setName("Booked");
                 }
             }
         } catch (Exception ex){

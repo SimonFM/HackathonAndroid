@@ -101,17 +101,17 @@ public abstract class BaseActivity extends AppCompatActivity implements WeekView
 
     @Override
     public void onEventClick(WeekViewEvent event, RectF eventRect) {
-        Toast.makeText(this, "Clicked " + event.getName() + event.getStartTime().getTime().getHours() + " : " + event.getStartTime().getTime().getMinutes(), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Clicked " + event.getName() + event.getStartTime().getTime().getHours() + " : " + event.getStartTime().getTime().getMinutes(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onEventLongPress(WeekViewEvent event, RectF eventRect) {
-        Toast.makeText(this, "Long pressed event: " + event.getName() + event.getStartTime().getTime().getHours() + " : " + event.getStartTime().getTime().getMinutes(), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Long pressed event: " + event.getName() + event.getStartTime().getTime().getHours() + " : " + event.getStartTime().getTime().getMinutes(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onEmptyViewLongPress(final Calendar time) {
-        Toast.makeText(this, "Empty view long pressed: " + getEventTitle(time), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Empty view long pressed: " + getEventTitle(time), Toast.LENGTH_SHORT).show();
 
 
         Bundle extras = getIntent().getExtras();

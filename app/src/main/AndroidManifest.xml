@@ -12,7 +12,7 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".CardViewActivity"
-            android:label="@string/app_name" >
+            android:label="" >
         </activity>
         <activity
             android:name=".LoginActivity"
@@ -28,7 +28,7 @@
             android:theme="@style/AppTheme.Dark" />
         <activity
             android:name=".UserProfileActivity"
-            android:label="@string/title_activity_user_profile" >
+            android:label="" >
         </activity>
 
         <activity
@@ -36,20 +36,20 @@
             android:theme="@style/AppTheme.Dark" />
         <activity
             android:name=".BookingsActivity"
-            android:label="@string/title_activity_bookings"
+            android:label=""
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".BookingDialog"
-            android:label="@string/title_activity_booking_dialog" >
+            android:label="" >
         </activity>
         <activity
             android:name=".PaymentActivity"
-            android:label="@string/title_activity_payment" >
+            android:label="" >
         </activity>
 
         <activity
             android:name=".UserCardViewActivity"
-            android:label="@string/title_activity_user_card_view" >
+            android:label="" >
         </activity>
 
     </application>
